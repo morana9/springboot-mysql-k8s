@@ -5,7 +5,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/morana9/springboot-mysql-k8s.git'
+                git branch: 'main', url 'https://github.com/morana9/springboot-mysql-k8s.git'
             }
         }
 
