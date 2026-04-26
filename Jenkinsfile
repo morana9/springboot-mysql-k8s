@@ -11,16 +11,25 @@ pipeline {
 
         stage('Build JAR') {
             steps {
-                sh 'chmod +x mvnw && ./mvnw clean package -DskipTests'
+                sh 'chmod +x mvnw'
+                sh './mvnw clean package -DskipTests'
             }
         }
 
         stage('Upload to Nexus') {
             steps {
-                sh '''
-                curl -v -u admin:admin123 --upload-file target/*.jar \
-                http://nexus-service:8081/repository/maven-releases/com/example/springboot-app/1.0/springboot-app-1.0.jar
-                '''
+                withCredentials([usernamePassword(
+                    credentialsId: 'nexus-creds',
+                    usernameVariable: 'NEXUS_USER',
+                    passwordVariable: 'NEXUS_PASS'
+                )]) {
+
+                    sh '''
+                    curl -v -u $NEXUS_USER:$NEXUS_PASS \
+                    --upload-file target/*.jar \
+                    http://192.168.49.2:30081/repository/maven-releases/springboot-app.jar
+                    '''
+                }
             }
         }
     }
